@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showroom Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--white);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        .brand-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .brand-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .brand-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-card.honda {
+            border-top: 5px solid #cc0000;
+        }
+
+        .brand-card.hero {
+            border-top: 5px solid #e31e24;
+        }
+
+        .brand-card.tvs {
+            border-top: 5px solid #0066cc;
+        }
+
+        .brand-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .brand-card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            display: none;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            margin: 40px 0;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px 16px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-light {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .search-section {
+            margin: 40px 0;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input,
+        .search-bar select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .records-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .record-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            border-left: 5px solid var(--primary);
+        }
+
+        .record-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .record-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .record-card p {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .record-card strong {
+            color: var(--dark);
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        .detail-modal .modal-content {
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .detail-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .brand-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav {
+                justify-content: center;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid var(--light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .weekly-report {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .weekly-report h3 {
+            margin-bottom: 20px;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .report-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .report-item h4 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">🏍️ Showroom Manager</div>
+            <nav>
+                <a onclick="showSection('home')">Home</a>
+                <a onclick="showSection('search')">Search</a>
+                <a onclick="showSection('about')">About</a>
+                <a onclick="showSection('reports')">Reports</a>
+                <span id="totalRecords" style="font-weight: 600; color: var(--primary);">Total: 0</span>
+            </nav>
+            <button id="adminToggle" class="admin-btn" onclick="toggleAdmin()">Admin Login</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="homeSection" class="section active">
+            <div class="hero">
+                <h1>Showroom Management System</h1>
+                <p>Manage your motorcycle sales and EMI records efficiently</p>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <div class="brand-cards">
+                <div class="brand-card honda" onclick="showBrandForm('Honda')">
+                    <div class="brand-icon">🏍️</div>
+                    <h3>Honda</h3>
+                    <p>Manage Honda bikes</p>
+                </div>
+                <div class="brand-card hero" onclick="showBrandForm('Hero')">
+                    <div class="brand-icon">🏍️</div>
+                    <h3>Hero</h3>
+                    <p>Manage Hero bikes</p>
+                </div>
+                <div class="brand-card tvs" onclick="showBrandForm('TVS')">
+                    <div class="brand-icon">🏍️</div>
+                    <h3>TVS</h3>
+                    <p>Manage TVS bikes</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalCustomers">0</h3>
+                    <p>Total Customers</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalEMI">₹0</h3>
+                    <p>Total EMI Amount</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeEMI">0</h3>
+                    <p>Active EMIs</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="formSection" class="section">
+            <button class="btn btn-light back-btn" onclick="showSection('home')">← Back to Home</button>
+            <h2 id="formTitle">Add Customer</h2>
+            <form id="customerForm">
+                <input type="hidden" id="customerId">
+                <input type="hidden" id="brandName">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Customer Code</label>
+                        <input type="text" id="customerCode" readonly style="background: var(--light);">
+                    </div>
+                    <div class="form-group">
+                        <label>Bike Name *</label>
+                        <input type="text" id="bikeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Name *</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Engine Number</label>
+                        <input type="text" id="engineNumber">
+                    </div>
+                    <div class="form-group">
+                        <label>Chassis Number</label>
+                        <input type="text" id="chassisNumber">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number *</label>
+                        <input type="tel" id="mobileNumber" required pattern="[0-9]{10}">
+                    </div>
+                    <div class="form-group">
+                        <label>Number Plate</label>
+                        <input type="text" id="numberPlate">
+                    </div>
+                    <div class="form-group">
+                        <label>Alternate Number</label>
+                        <input type="tel" id="alternateNumber" pattern="[0-9]{10}">
+                    </div>
+                    <div class="form-group">
+                        <label>EMI Amount *</label>
+                        <input type="number" id="emiAmount" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Months *</label>
+                        <input type="number" id="numberOfMonths" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date *</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date *</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Door Number</label>
+                        <input type="text" id="doorNumber">
+                    </div>
+                    <div class="form-group">
+                        <label>Street</label>
+                        <input type="text" id="street">
+                    </div>
+                    <div class="form-group">
+                        <label>Nearby Landmark</label>
+                        <input type="text" id="nearbyLandmark">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Address</label>
+                        <textarea id="address"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Additional Details</label>
+                        <textarea id="additionalDetails"></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="saveBtn" disabled>Save Customer</button>
+                    <button type="button" class="btn btn-secondary" id="updateBtn" onclick="updateCustomer()" disabled>Update Customer</button>
+                    <button type="button" class="btn btn-light" onclick="clearForm()">Clear Form</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="searchSection" class="section">
+            <h2>Search & View Records</h2>
+            <div class="search-bar">
+                <input type="text" id="searchName" placeholder="Search by customer name..." onkeyup="searchCustomers()">
+                <input type="text" id="searchCode" placeholder="Search by customer code..." onkeyup="searchCustomers()">
+                <select id="searchBrand" onchange="searchCustomers()">
+                    <option value="">All Brands</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Hero">Hero</option>
+                    <option value="TVS">TVS</option>
+                </select>
+                <button class="btn btn-primary" onclick="downloadAllRecords()">Download All</button>
+            </div>
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading records...</p>
+            </div>
+            <div id="recordsContainer" class="records-grid"></div>
+        </div>
+
+        <div id="reportsSection" class="section">
+            <h2>Weekly Reports & Analytics</h2>
+            <div id="weeklyReport" class="weekly-report">
+                <h3>This Week's Summary</h3>
+                <div class="report-grid">
+                    <div class="report-item">
+                        <h4 id="weekNewCustomers">0</h4>
+                        <p>New Customers</p>
+                    </div>
+                    <div class="report-item">
+                        <h4 id="weekTotalEMI">₹0</h4>
+                        <p>Total EMI Collected</p>
+                    </div>
+                    <div class="report-item">
+                        <h4 id="weekHonda">0</h4>
+                        <p>Honda Sales</p>
+                    </div>
+                    <div class="report-item">
+                        <h4 id="weekHero">0</h4>
+                        <p>Hero Sales</p>
+                    </div>
+                    <div class="report-item">
+                        <h4 id="weekTVS">0</h4>
+                        <p>TVS Sales</p>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="downloadWeeklyReport()">Download Weekly Report</button>
+        </div>
+
+        <div id="aboutSection" class="section">
+            <h2>About Showroom Management System</h2>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 20px;">
+                This is a comprehensive showroom management application designed for motorcycle dealerships.
+                It helps manage customer records, EMI details, and track sales across different brands including Honda, Hero, and TVS.
+            </p>
+            <div class="stats-grid" style="margin-top: 40px;">
+                <div class="stat-card">
+                    <h3>✨</h3>
+                    <p>Beautiful Design</p>
+                </div>
+                <div class="stat-card">
+                    <h3>🔒</h3>
+                    <p>Secure Admin Access</p>
+                </div>
+                <div class="stat-card">
+                    <h3>📱</h3>
+                    <p>Multi-Device Sync</p>
+                </div>
+                <div class="stat-card">
+                    <h3>📊</h3>
+                    <p>Weekly Reports</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="verifyAdmin()">Login</button>
+                <button class="btn btn-light" onclick="closeModal('adminModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal detail-modal">
+        <div class="modal-content">
+            <h2>Customer Details</h2>
+            <div id="customerDetails"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="downloadRecord()">Download</button>
+                <button class="btn btn-secondary" id="editDetailBtn" onclick="editFromDetail()" style="display: none;">Edit</button>
+                <button class="btn btn-danger" id="deleteDetailBtn" onclick="deleteFromDetail()" style="display: none;">Delete</button>
+                <button class="btn btn-light" onclick="closeModal('detailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Showroom Management System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://lxssoausbbihcflumwer.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4c3NvYXVzYmJpaGNmbHVtd2VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MjE4NDMsImV4cCI6MjA3Njk5Nzg0M30.mLHZP4HwN2GdST84P9-FosRmd1ZyalvReIJbrvnA5SE';
+        const ADMIN_PASSWORD = 'nandhishwer5555';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let isAdmin = false;
+        let currentCustomerId = null;
+        let allCustomers = [];
+
+        async function initApp() {
+            await loadCustomers();
+            updateStats();
+            updateWeeklyReport();
+        }
+
+        async function loadCustomers() {
+            try {
+                showLoading(true);
+                const { data, error } = await supabase
+                    .from('customers')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allCustomers = data || [];
+                displayCustomers(allCustomers);
+                updateStats();
+            } catch (error) {
+                showAlert('Error loading customers: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function generateCustomerCode() {
+            try {
+                const { data, error } = await supabase
+                    .from('customers')
+                    .select('id')
+                    .order('id', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const lastCode = parseInt(data[0].id);
+                    return String(lastCode + 1).padStart(4, '0');
+                } else {
+                    return '0001';
+                }
+            } catch (error) {
+                console.error('Error generating code:', error);
+                return '0001';
+            }
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section + 'Section').classList.add('active');
+
+            if (section === 'search') {
+                searchCustomers();
+            } else if (section === 'reports') {
+                updateWeeklyReport();
+            }
+        }
+
+        async function showBrandForm(brand) {
+            if (!isAdmin) {
+                showAlert('Please login as admin to add/edit records', 'error');
+                return;
+            }
+
+            showSection('form');
+            document.getElementById('formTitle').textContent = `Add ${brand} Customer`;
+            document.getElementById('brandName').value = brand;
+            clearForm();
+
+            const code = await generateCustomerCode();
+            document.getElementById('customerCode').value = code;
+            document.getElementById('customerId').value = code;
+        }
+
+        function clearForm() {
+            document.getElementById('customerForm').reset();
+            document.getElementById('customerId').value = '';
+            currentCustomerId = null;
+            document.getElementById('updateBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'inline-block';
+        }
+
+        document.getElementById('customerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAdmin) {
+                showAlert('Admin access required', 'error');
+                return;
+            }
+
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+
+            if (endDate < startDate) {
+                showAlert('End date must be after start date', 'error');
+                return;
+            }
+
+            const customer = {
+                id: document.getElementById('customerId').value,
+                brand: document.getElementById('brandName').value,
+                bike_name: document.getElementById('bikeName').value.trim(),
+                customer_name: document.getElementById('customerName').value.trim(),
+                engine_number: document.getElementById('engineNumber').value.trim(),
+                chassis_number: document.getElementById('chassisNumber').value.trim(),
+                mobile_number: document.getElementById('mobileNumber').value.trim(),
+                number_plate: document.getElementById('numberPlate').value.trim(),
+                alternate_number: document.getElementById('alternateNumber').value.trim(),
+                emi_amount: parseFloat(document.getElementById('emiAmount').value),
+                number_of_months: parseInt(document.getElementById('numberOfMonths').value),
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                address: document.getElementById('address').value.trim(),
+                nearby_landmark: document.getElementById('nearbyLandmark').value.trim(),
+                street: document.getElementById('street').value.trim(),
+                door_number: document.getElementById('doorNumber').value.trim(),
+                additional_details: document.getElementById('additionalDetails').value.trim()
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('customers')
+                    .insert([customer])
+                    .select();
+
+                if (error) throw error;
+
+                showAlert('Customer added successfully!', 'success');
+                clearForm();
+                await loadCustomers();
+                showSection('search');
+            } catch (error) {
+                showAlert('Error saving customer: ' + error.message, 'error');
+            }
+        });
+
+        async function updateCustomer() {
+            if (!isAdmin || !currentCustomerId) return;
+
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+
+            if (endDate < startDate) {
+                showAlert('End date must be after start date', 'error');
+                return;
+            }
+
+            const customer = {
+                brand: document.getElementById('brandName').value,
+                bike_name: document.getElementById('bikeName').value.trim(),
+                customer_name: document.getElementById('customerName').value.trim(),
+                engine_number: document.getElementById('engineNumber').value.trim(),
+                chassis_number: document.getElementById('chassisNumber').value.trim(),
+                mobile_number: document.getElementById('mobileNumber').value.trim(),
+                number_plate: document.getElementById('numberPlate').value.trim(),
+                alternate_number: document.getElementById('alternateNumber').value.trim(),
+                emi_amount: parseFloat(document.getElementById('emiAmount').value),
+                number_of_months: parseInt(document.getElementById('numberOfMonths').value),
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                address: document.getElementById('address').value.trim(),
+                nearby_landmark: document.getElementById('nearbyLandmark').value.trim(),
+                street: document.getElementById('street').value.trim(),
+                door_number: document.getElementById('doorNumber').value.trim(),
+                additional_details: document.getElementById('additionalDetails').value.trim(),
+                updated_at: new Date().toISOString()
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('customers')
+                    .update(customer)
+                    .eq('id', currentCustomerId)
+                    .select();
+
+                if (error) throw error;
+
+                showAlert('Customer updated successfully!', 'success');
+                clearForm();
+                await loadCustomers();
+                showSection('search');
+            } catch (error) {
+                showAlert('Error updating customer: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteCustomer(id) {
+            if (!isAdmin) return;
+
+            if (!confirm('Are you sure you want to delete this customer record?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('customers')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                showAlert('Customer deleted successfully!', 'success');
+                await loadCustomers();
+                closeModal('detailModal');
+            } catch (error) {
+                showAlert('Error deleting customer: ' + error.message, 'error');
+            }
+        }
+
+        function editCustomer(id) {
+            if (!isAdmin) return;
+
+            const customer = allCustomers.find(c => c.id === id);
+            if (!customer) return;
+
+            currentCustomerId = id;
+
+            document.getElementById('customerId').value = customer.id;
+            document.getElementById('customerCode').value = customer.id;
+            document.getElementById('brandName').value = customer.brand;
+            document.getElementById('bikeName').value = customer.bike_name;
+            document.getElementById('customerName').value = customer.customer_name;
+            document.getElementById('engineNumber').value = customer.engine_number || '';
+            document.getElementById('chassisNumber').value = customer.chassis_number || '';
+            document.getElementById('mobileNumber').value = customer.mobile_number;
+            document.getElementById('numberPlate').value = customer.number_plate || '';
+            document.getElementById('alternateNumber').value = customer.alternate_number || '';
+            document.getElementById('emiAmount').value = customer.emi_amount;
+            document.getElementById('numberOfMonths').value = customer.number_of_months;
+            document.getElementById('startDate').value = customer.start_date;
+            document.getElementById('endDate').value = customer.end_date;
+            document.getElementById('address').value = customer.address || '';
+            document.getElementById('nearbyLandmark').value = customer.nearby_landmark || '';
+            document.getElementById('street').value = customer.street || '';
+            document.getElementById('doorNumber').value = customer.door_number || '';
+            document.getElementById('additionalDetails').value = customer.additional_details || '';
+
+            document.getElementById('formTitle').textContent = `Edit ${customer.brand} Customer`;
+            document.getElementById('saveBtn').style.display = 'none';
+            document.getElementById('updateBtn').style.display = 'inline-block';
+
+            showSection('form');
+        }
+
+        function searchCustomers() {
+            const searchName = document.getElementById('searchName').value.toLowerCase();
+            const searchCode = document.getElementById('searchCode').value.toLowerCase();
+            const searchBrand = document.getElementById('searchBrand').value;
+
+            let filtered = allCustomers.filter(customer => {
+                const matchName = customer.customer_name.toLowerCase().includes(searchName);
+                const matchCode = customer.id.toLowerCase().includes(searchCode);
+                const matchBrand = !searchBrand || customer.brand === searchBrand;
+                return matchName && matchCode && matchBrand;
+            });
+
+            displayCustomers(filtered);
+        }
+
+        function displayCustomers(customers) {
+            const container = document.getElementById('recordsContainer');
+
+            if (customers.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #888;">No records found</p>';
+                return;
+            }
+
+            container.innerHTML = customers.map(customer => `
+                <div class="record-card">
+                    <h3>${customer.customer_name}</h3>
+                    <p><strong>Code:</strong> <span>${customer.id}</span></p>
+                    <p><strong>Brand:</strong> <span>${customer.brand}</span></p>
+                    <p><strong>Bike:</strong> <span>${customer.bike_name}</span></p>
+                    <p><strong>Mobile:</strong> <span>${customer.mobile_number}</span></p>
+                    <p><strong>EMI:</strong> <span>₹${customer.emi_amount} × ${customer.number_of_months} months</span></p>
+                    <div class="record-actions">
+                        <button class="btn btn-primary" onclick="viewDetails('${customer.id}')">View Details</button>
+                        ${isAdmin ? `
+                            <button class="btn btn-secondary" onclick="editCustomer('${customer.id}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteCustomer('${customer.id}')">Delete</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('totalRecords').textContent = `Total: ${customers.length}`;
+        }
+
+        function viewDetails(id) {
+            const customer = allCustomers.find(c => c.id === id);
+            if (!customer) return;
+
+            currentCustomerId = id;
+
+            const details = `
+                <div class="detail-grid">
+                    <div class="detail-item"><strong>Customer Code</strong>${customer.id}</div>
+                    <div class="detail-item"><strong>Brand</strong>${customer.brand}</div>
+                    <div class="detail-item"><strong>Bike Name</strong>${customer.bike_name}</div>
+                    <div class="detail-item"><strong>Customer Name</strong>${customer.customer_name}</div>
+                    <div class="detail-item"><strong>Engine Number</strong>${customer.engine_number || 'N/A'}</div>
+                    <div class="detail-item"><strong>Chassis Number</strong>${customer.chassis_number || 'N/A'}</div>
+                    <div class="detail-item"><strong>Mobile Number</strong>${customer.mobile_number}</div>
+                    <div class="detail-item"><strong>Alternate Number</strong>${customer.alternate_number || 'N/A'}</div>
+                    <div class="detail-item"><strong>Number Plate</strong>${customer.number_plate || 'N/A'}</div>
+                    <div class="detail-item"><strong>EMI Amount</strong>₹${customer.emi_amount}</div>
+                    <div class="detail-item"><strong>Number of Months</strong>${customer.number_of_months}</div>
+                    <div class="detail-item"><strong>Total EMI</strong>₹${customer.emi_amount * customer.number_of_months}</div>
+                    <div class="detail-item"><strong>Start Date</strong>${customer.start_date}</div>
+                    <div class="detail-item"><strong>End Date</strong>${customer.end_date}</div>
+                    <div class="detail-item"><strong>Door Number</strong>${customer.door_number || 'N/A'}</div>
+                    <div class="detail-item"><strong>Street</strong>${customer.street || 'N/A'}</div>
+                    <div class="detail-item"><strong>Landmark</strong>${customer.nearby_landmark || 'N/A'}</div>
+                    <div class="detail-item" style="grid-column: 1 / -1;"><strong>Address</strong>${customer.address || 'N/A'}</div>
+                    <div class="detail-item" style="grid-column: 1 / -1;"><strong>Additional Details</strong>${customer.additional_details || 'N/A'}</div>
+                </div>
+            `;
+
+            document.getElementById('customerDetails').innerHTML = details;
+            document.getElementById('editDetailBtn').style.display = isAdmin ? 'inline-block' : 'none';
+            document.getElementById('deleteDetailBtn').style.display = isAdmin ? 'inline-block' : 'none';
+
+            openModal('detailModal');
+        }
+
+        function editFromDetail() {
+            closeModal('detailModal');
+            editCustomer(currentCustomerId);
+        }
+
+        function deleteFromDetail() {
+            deleteCustomer(currentCustomerId);
+        }
+
+        function updateStats() {
+            const totalCustomers = allCustomers.length;
+            const totalEMI = allCustomers.reduce((sum, c) => sum + (c.emi_amount * c.number_of_months), 0);
+            const today = new Date();
+            const activeEMI = allCustomers.filter(c => new Date(c.end_date) >= today).length;
+
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('totalEMI').textContent = '₹' + totalEMI.toLocaleString();
+            document.getElementById('activeEMI').textContent = activeEMI;
+            document.getElementById('totalRecords').textContent = `Total: ${totalCustomers}`;
+        }
+
+        function updateWeeklyReport() {
+            const today = new Date();
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+            const weekCustomers = allCustomers.filter(c => new Date(c.created_at) >= weekAgo);
+            const weekTotalEMI = weekCustomers.reduce((sum, c) => sum + (c.emi_amount * c.number_of_months), 0);
+            const weekHonda = weekCustomers.filter(c => c.brand === 'Honda').length;
+            const weekHero = weekCustomers.filter(c => c.brand === 'Hero').length;
+            const weekTVS = weekCustomers.filter(c => c.brand === 'TVS').length;
+
+            document.getElementById('weekNewCustomers').textContent = weekCustomers.length;
+            document.getElementById('weekTotalEMI').textContent = '₹' + weekTotalEMI.toLocaleString();
+            document.getElementById('weekHonda').textContent = weekHonda;
+            document.getElementById('weekHero').textContent = weekHero;
+            document.getElementById('weekTVS').textContent = weekTVS;
+        }
+
+        function toggleAdmin() {
+            if (isAdmin) {
+                isAdmin = false;
+                document.getElementById('adminToggle').textContent = 'Admin Login';
+                document.getElementById('adminToggle').classList.remove('logout-btn');
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('updateBtn').disabled = true;
+                showAlert('Logged out successfully', 'success');
+                searchCustomers();
+            } else {
+                openModal('adminModal');
+            }
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('adminToggle').textContent = 'Logout';
+                document.getElementById('adminToggle').classList.add('logout-btn');
+                document.getElementById('saveBtn').disabled = false;
+                document.getElementById('updateBtn').disabled = false;
+                closeModal('adminModal');
+                showAlert('Admin access granted!', 'success');
+                searchCustomers();
+            } else {
+                showAlert('Invalid password!', 'error');
+            }
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertContainer.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        async function downloadRecord() {
+            if (!currentCustomerId) return;
+
+            const customer = allCustomers.find(c => c.id === currentCustomerId);
+            if (!customer) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 1000;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Customer Record', canvas.width / 2, 50);
+
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'left';
+            let y = 100;
+            const lineHeight = 35;
+
+            const details = [
+                `Code: ${customer.id}`,
+                `Brand: ${customer.brand}`,
+                `Bike: ${customer.bike_name}`,
+                `Name: ${customer.customer_name}`,
+                `Mobile: ${customer.mobile_number}`,
+                `Engine: ${customer.engine_number || 'N/A'}`,
+                `Chassis: ${customer.chassis_number || 'N/A'}`,
+                `EMI: ₹${customer.emi_amount} × ${customer.number_of_months} months`,
+                `Total: ₹${customer.emi_amount * customer.number_of_months}`,
+                `Period: ${customer.start_date} to ${customer.end_date}`,
+                `Address: ${customer.address || 'N/A'}`
+            ];
+
+            details.forEach(line => {
+                ctx.fillText(line, 50, y);
+                y += lineHeight;
+            });
+
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `customer_${customer.id}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        async function downloadAllRecords() {
+            const csv = [
+                ['Code', 'Brand', 'Bike', 'Customer Name', 'Mobile', 'Engine', 'Chassis', 'EMI', 'Months', 'Start Date', 'End Date'].join(','),
+                ...allCustomers.map(c => [
+                    c.id,
+                    c.brand,
+                    c.bike_name,
+                    c.customer_name,
+                    c.mobile_number,
+                    c.engine_number || '',
+                    c.chassis_number || '',
+                    c.emi_amount,
+                    c.number_of_months,
+                    c.start_date,
+                    c.end_date
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'all_customers.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function downloadWeeklyReport() {
+            const today = new Date();
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const weekCustomers = allCustomers.filter(c => new Date(c.created_at) >= weekAgo);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 1000;
+            canvas.height = 600;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 40px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Weekly Report', canvas.width / 2, 60);
+
+            ctx.font = '24px Arial';
+            let y = 140;
+            const lineHeight = 50;
+
+            const weekTotalEMI = weekCustomers.reduce((sum, c) => sum + (c.emi_amount * c.number_of_months), 0);
+            const weekHonda = weekCustomers.filter(c => c.brand === 'Honda').length;
+            const weekHero = weekCustomers.filter(c => c.brand === 'Hero').length;
+            const weekTVS = weekCustomers.filter(c => c.brand === 'TVS').length;
+
+            const stats = [
+                `New Customers: ${weekCustomers.length}`,
+                `Total EMI Collected: ₹${weekTotalEMI.toLocaleString()}`,
+                `Honda Sales: ${weekHonda}`,
+                `Hero Sales: ${weekHero}`,
+                `TVS Sales: ${weekTVS}`,
+                ``,
+                `Report Generated: ${today.toLocaleDateString()}`
+            ];
+
+            stats.forEach(line => {
+                ctx.fillText(line, canvas.width / 2, y);
+                y += lineHeight;
+            });
+
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `weekly_report_${today.toISOString().split('T')[0]}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        document.getElementById('startDate').addEventListener('change', function() {
+            document.getElementById('endDate').min = this.value;
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        initApp();
+    </script>
+</body>
+</html>
